@@ -15,7 +15,7 @@ if ($conn->connect_error) {
 $app->get("/update", function ($request, $response, $args) {
 
   $file_name = date("Ymd") . ".csv";
-  $file = gzfile("http://missingroads.skobbler.net/dumps/OneWays/directionOfFlow_" . date("Ymd") . ".csv.gz");
+  $file = gzfile("https://missingroads.skobbler.net/dumps/OneWays/directionOfFlow_" . date("Ymd") . ".csv.gz");
 
   //$data = "wayId;fromNodeId;toNodeId;percentage;status;roadType;theGeom;numberOfTrips\r\n";
   $data = "wayId;fromNodeId;toNodeId;latitude;longitude\r\n";
