@@ -4,8 +4,6 @@ require "vendor/autoload.php";
 
 require "geometry_utils.php";
 
-
-$file_name = date("Ymd") . ".csv";
 $file = gzfile("https://missingroads.skobbler.net/dumps/OneWays/directionOfFlow_" . date("Ymd") . ".csv.gz");
 
 //$data = "wayId;fromNodeId;toNodeId;percentage;status;roadType;theGeom;numberOfTrips\r\n";
@@ -30,12 +28,9 @@ foreach ($file as $line) {
     $data .= implode(";", $csv) . "\r\n";
   }
 }
-file_put_contents($file_name, $data);
 file_put_contents("latest.csv", $data);
 
-//add_to_database($file_name);
-
-if (!file_exists($file_name)) {
+if (!file_exists("latest.csv")) {
   echo "There was an issue while updating the data!";
 }
 

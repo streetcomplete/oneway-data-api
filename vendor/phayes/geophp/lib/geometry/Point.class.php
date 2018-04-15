@@ -86,21 +86,6 @@ class Point extends Geometry
     else return NULL;
   }
 
-  /**
-   * Author : Adam Cherti
-   * inverts x and y coordinates
-   * Useful with old applications still using lng lat
-   *
-   * @return void
-   * */
-  public function invertxy()
-  {
-	$x=$this->coords[0];
-	$this->coords[0]=$this->coords[1];
-	$this->coords[1]=$x;
-  }
-
-
   // A point's centroid is itself
   public function centroid() {
     return $this;
@@ -166,12 +151,7 @@ class Point extends Geometry
       return FALSE;
     }
     if (!$this->isEmpty() && !$geometry->isEmpty()) {
-      /**
-       * @see: http://php.net/manual/en/function.bccomp.php
-       * @see: http://php.net/manual/en/language.types.float.php
-       * @see: http://tubalmartin.github.io/spherical-geometry-php/#LatLng
-       */
-      return (abs($this->x() - $geometry->x()) <= 1.0E-9 && abs($this->y() - $geometry->y()) <= 1.0E-9);
+      return ($this->x() == $geometry->x() && $this->y() == $geometry->y());
     }
     else if ($this->isEmpty() && $geometry->isEmpty()) {
       return TRUE;

@@ -1,6 +1,5 @@
 {
     "require": {
-        "slim/slim": "^3.9",
         "phayes/geophp": "^1.2"
     }
 }
