@@ -1,11 +1,13 @@
 <?php
 //GET the data by a bounding box
 
+header('Content-Type: application/json');
+
 require "vendor/autoload.php";
 
 $bbox = str_to_bbox($_GET['bbox']);
 
-if (!bbox_is_valid($bbox)) {
+if (!is_valid_bbox($bbox)) {
   http_response_code(400);
   echo json_encode(["status" => "The specified bounding box is not valid!"]);
   die();
@@ -31,7 +33,6 @@ foreach (file("latest.csv") as $line) {
 }
 
 http_response_code(200);
-header('Content-Type: application/json');
 echo json_encode($result, JSON_PRETTY_PRINT);
 
 function str_to_bbox($string)
@@ -45,10 +46,9 @@ function str_to_bbox($string)
   return $bbox;
 }
 
-//TODO: Add BBOX validation here
-function bbox_is_valid($bbox)
+function is_valid_bbox($bbox)
 {
-  if (isset($bbox)) {
+  if (isset($bbox) && abs($bbox->left) <= 180 && abs($bbox->bottom) <= 90 && abs($bbox->right) <= 180 && abs($bbox->top) <= 90) {
     return true;
   }
   return false;
