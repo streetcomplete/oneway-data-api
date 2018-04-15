@@ -12,6 +12,10 @@ It consists mainly of two files:
 - The bounding box must be passed as an URL parameter
 - Example: [`/get.php/?bbox=18,-34,19,-33`](https://ent8r.lima-city.de/oneway-data-api/get.php?bbox=18,-34,19,-33) gets all ways in Cape Town
 
+## Configuration
+
+Create a `config.php` file from the `config.sample.php` template and fill it with your MySQL DB settings. Don't forget to create the respective DB and user beforehand.
+
 ## Getting started
 
 * [Website for testing](https://ent8r.lima-city.de/oneway-data-api/)
