@@ -4,12 +4,12 @@ require "vendor/autoload.php";
 
 $app = new Slim\App();
 
-$conn = new mysqli("localhost", "api", "12345678");
+/*$conn = new mysqli("localhost", "api", "12345678");
 
 // Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
-}
+}*/
 
 //Update the data
 $app->get("/update", function ($request, $response, $args) {
