@@ -2,36 +2,102 @@
 
 require "vendor/autoload.php";
 
+require "config.php";
 require "geometry_utils.php";
 
+
+// connect to database
+$mysqli = new mysqli($DB_HOST, $DB_USER, $DB_PASSWORD, $DB_DATABASE);
+if ($mysqli->connect_errno) {
+  echo $mysqli->connect_error;
+  exit(1);
+}
+
+// prepare for updating database
+if (!($mysqli->query("CREATE TABLE IF NOT EXISTS oneway(
+                  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                  wayId BIGINT UNSIGNED,
+                  fromNodeId BIGINT UNSIGNED,
+                  toNodeId BIGINT UNSIGNED,
+                  latitude DOUBLE(25,20),
+                  longitude DOUBLE(25,20)
+                )")))
+{
+  echo $mysqli->error;
+  exit(1);
+}
+
+if (!($mysqli->query("DROP TABLE IF EXISTS oneway_new"))) {
+  echo $mysqli->error;
+  exit(1);
+}
+
+if (!($mysqli->query("CREATE TABLE oneway_new LIKE oneway"))) {
+  echo $mysqli->error;
+  exit(1);
+}
+
+if (!($stmt = $mysqli->prepare("INSERT INTO oneway_new(wayId, fromNodeId, toNodeId, latitude, longitude) VALUES (?, ?, ?, ?, ?)")))
+{
+  echo $mysqli->error;
+  exit(1);
+}
+
+if (!($stmt->bind_param("iiidd", $wayID, $fromNodeId, $toNodeId, $latitude, $longitude))) {
+  echo $stmt->error;
+  exit(1);
+}
+
+if (!($mysqli->query("START TRANSACTION"))) {
+  echo $mysqli->error;
+  exit(1);
+}
+
+// get new data from server
 $file = gzfile("https://missingroads.skobbler.net/dumps/OneWays/directionOfFlow_" . date("Ymd") . ".csv.gz");
 
-//$data = "wayId;fromNodeId;toNodeId;percentage;status;roadType;theGeom;numberOfTrips\r\n";
-$data = "wayId;fromNodeId;toNodeId;latitude;longitude\r\n";
+// convert data into desired format and prepare db operations
 foreach ($file as $line) {
   $csv = str_getcsv($line, ";");
   if (isset($csv[4]) && $csv[4] == "OPEN") {
-    //The percentage is not needed anymore
-    unset($csv[3]);
-    //The status too
-    unset($csv[4]);
-    //The road type also
-    unset($csv[5]);
-    //and the number of trips as well
-    unset($csv[7]);
-
     $centroid = get_centroid(geoPHP::load($csv[6], 'wkt'));
-    unset($csv[6]);
-    $csv[3] = $centroid->getY();
-    $csv[4] = $centroid->getX();
-
-    $data .= implode(";", $csv) . "\r\n";
+    $wayID = $csv[0];
+    $fromNodeId = $csv[1];
+    $toNodeId = $csv[2];
+    $latitude = $centroid->getY();
+    $longitude = $centroid->getX();
+    if (!($stmt->execute())) {
+      echo $stmt->error;
+      exit(1);
+    }
   }
 }
-file_put_contents("latest.csv", $data);
 
-if (!file_exists("latest.csv")) {
-  echo "There was an issue while updating the data!";
+// actually do db operations
+if (!($stmt->close())) {
+  echo $stmt->error;
+  exit(1);
+}
+
+if (!($mysqli->query("COMMIT"))) {
+  echo $mysqli->error;
+  exit(1);
+}
+
+// make new data available and clean up old data
+if (!($mysqli->query("RENAME TABLE oneway TO oneway_old, oneway_new To oneway;"))) {
+  echo $mysqli->error;
+  exit(1);
+}
+
+if (!($mysqli->query("DROP TABLE IF EXISTS oneway_old"))) {
+  echo $mysqli->error;
+  exit(1);
+}
+
+if (!($mysqli->close())) {
+  echo $mysqli->error;
+  exit(1);
 }
 
 ?>
