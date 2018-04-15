@@ -68,7 +68,8 @@ function str_to_bbox($string)
 
 function is_valid_bbox($bbox)
 {
-  if (isset($bbox) && abs($bbox->left) <= 180 && abs($bbox->bottom) <= 90 && abs($bbox->right) <= 180 && abs($bbox->top) <= 90) {
+  if (isset($bbox) && isset($bbox->left) && isset($bbox->bottom) && isset($bbox->right) && isset($bbox->top) &&
+      abs($bbox->left) <= 180 && abs($bbox->bottom) <= 90 && abs($bbox->right) <= 180 && abs($bbox->top) <= 90) {
     return true;
   }
   return false;
