@@ -6,6 +6,8 @@ It consists mainly of two files:
 
 #### `update.php`
 - Used to get the latest data from the server (should be run daily)
+- Since it can place load on the machine, better make it inaccessible from the web
+- Invoke for example via cron as `php -f update.php`
 
 #### `get.php`
 - Used to get the data for a specified bounding box
