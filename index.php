@@ -27,12 +27,12 @@ if (!is_valid_bbox($bbox)) {
 // get ways out of the db which lie in the bbox and construct result
 $result = (object) new stdClass();
 
-if (!($stmt = $mysqli->prepare("SELECT wayID, fromNodeId, toNodeId FROM oneway WHERE (ABS(latitude) BETWEEN ABS(?) AND ABS(?)) AND (ABS(longitude) BETWEEN ABS(?) and ABS(?))"))) {
+if (!($stmt = $mysqli->prepare("SELECT wayID, fromNodeId, toNodeId FROM oneway WHERE (latitude BETWEEN ? AND ?) AND (longitude BETWEEN ? and ?)"))) {
   echo $mysqli->error;
   exit(1);
 }
 
-if (!($stmt->bind_param("dddd", $bbox->top, $bbox->bottom, $bbox->left, $bbox->right))) {
+if (!($stmt->bind_param("dddd", $bbox->bottom, $bbox->top, $bbox->left, $bbox->right))) {
   echo $stmt->error;
   exit(1);
 }
@@ -69,7 +69,8 @@ function str_to_bbox($string)
 function is_valid_bbox($bbox)
 {
   if (isset($bbox) && isset($bbox->left) && isset($bbox->bottom) && isset($bbox->right) && isset($bbox->top) &&
-      abs($bbox->left) <= 180 && abs($bbox->bottom) <= 90 && abs($bbox->right) <= 180 && abs($bbox->top) <= 90) {
+      abs($bbox->left) <= 180 && abs($bbox->bottom) <= 90 && abs($bbox->right) <= 180 && abs($bbox->top) <= 90 &&
+      $bbox->left < $bbox->right && $bbox->bottom < $bbox->top) {
     return true;
   }
   return false;
