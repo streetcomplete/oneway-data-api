@@ -1,9 +1,9 @@
 <?php
 
 require "web/config.php";
-require "web/geometry/geometry_utils.php";
-require "web/geometry/Point.class.php";
-require "web/geometry/LineString.class.php";
+require "geometry/geometry_utils.php";
+require "geometry/Point.class.php";
+require "geometry/LineString.class.php";
 
 
 // connect to database
