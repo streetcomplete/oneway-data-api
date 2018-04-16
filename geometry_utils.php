@@ -21,12 +21,42 @@ function get_centroid($line)
     if($distance > $halfDistance)
     {
       $ratio = ($distance - $halfDistance) / $segmentDistance;
-			$lat = $pos2->getY() - $ratio * ($pos2->getY() - $pos1->getY());
-			$lon = $pos2->getX() - $ratio * ($pos2->getX() - $pos1->getX());
+			$lat = $pos2->y() - $ratio * ($pos2->y() - $pos1->y());
+			$lon = $pos2->x() - $ratio * ($pos2->x() - $pos1->x());
 			return new Point($lon, $lat);
     }
   }
 	return null;
+}
+
+function get_data_string($wkt) {
+  $first_paren = strpos($wkt, '(');
+  if ($first_paren !== FALSE) {
+    return substr($wkt, $first_paren);
+  } elseif (strstr($wkt,'EMPTY')) {
+    return 'EMPTY';
+  } else
+    return FALSE;
+}
+
+function parse_line_string($data_string) {
+  $data_string = trim_parens($data_string);
+  if ($data_string == 'EMPTY') return new LineString();
+
+  $parts = explode(',', $data_string);
+  $points = array();
+  foreach ($parts as $part) {
+    $points[] = parse_point($part);
+  }
+  return new LineString($points);
+}
+
+function parse_point($data_string) {
+  $data_string = trim_parens($data_string);
+  if ($data_string == 'EMPTY') return new Point();
+
+  $parts = explode(' ', $data_string);
+  return new Point($parts[0], $parts[1]);
 }
 
 
@@ -36,10 +66,10 @@ function get_centroid($line)
 function get_distance($pos1, $pos2, $EARTH_RADIUS)
 {
 	return $EARTH_RADIUS * distance(
-			deg2rad($pos1->getY()),
-			deg2rad($pos1->getX()),
-			deg2rad($pos2->getY()),
-			deg2rad($pos2->getX()
+			deg2rad($pos1->y()),
+			deg2rad($pos1->x()),
+			deg2rad($pos2->y()),
+			deg2rad($pos2->x()
 			));
 }
 
@@ -52,6 +82,20 @@ function distance($φ1, $λ1, $φ2, $λ2)
 	$y = sqrt(pow(cos($φ2)*sin($Δλ), 2) + pow(cos($φ1)*sin($φ2) - sin($φ1)*cos($φ2)*cos($Δλ), 2));
 	$x = sin($φ1)*sin($φ2) + cos($φ1)*cos($φ2)*cos($Δλ);
 	return atan2($y, $x);
+}
+
+
+/**
+ * Trim the parenthesis and spaces
+ */
+function trim_parens($str) {
+  $str = trim($str);
+
+  // We want to only strip off one set of parenthesis
+  if (substr($str,0,strlen('(')) == '(') {
+    return substr($str,1,-1);
+  }
+  else return $str;
 }
 
 ?>

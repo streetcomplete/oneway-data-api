@@ -3,8 +3,6 @@
 
 header('Content-Type: application/json');
 
-require "vendor/autoload.php";
-
 require "config.php";
 
 

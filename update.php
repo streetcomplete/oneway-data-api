@@ -1,9 +1,10 @@
 <?php
 
-require "vendor/autoload.php";
-
 require "config.php";
 require "geometry_utils.php";
+
+require "geometry/Point.class.php";
+require "geometry/LineString.class.php";
 
 
 // connect to database
@@ -75,12 +76,13 @@ if ($pos_wayId === FALSE || $pos_fromNodeId === FALSE || $pos_toNodeId === FALSE
 foreach ($file as $line) {
   $csv = str_getcsv($line, ";");
   if (isset($csv[$pos_status]) && $csv[$pos_status] == "OPEN") {
-    $centroid = get_centroid(geoPHP::load($csv[$pos_theGeom], 'wkt'));
+    $normalizedGeometry = str_replace(', ', ',', trim($csv[$pos_theGeom]));
+    $centroid = get_centroid(parse_line_string(get_data_string($normalizedGeometry)));
     $wayId = $csv[$pos_wayId];
     $fromNodeId = $csv[$pos_fromNodeId];
     $toNodeId = $csv[$pos_toNodeId];
-    $latitude = $centroid->getY();
-    $longitude = $centroid->getX();
+    $latitude = $centroid->y();
+    $longitude = $centroid->x();
     if (!($stmt->execute())) {
       echo $stmt->error;
       exit(1);
