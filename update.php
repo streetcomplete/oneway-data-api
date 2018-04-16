@@ -24,8 +24,8 @@ if (!($mysqli->query("CREATE TABLE IF NOT EXISTS oneway_new(
                       wayId BIGINT UNSIGNED,
                       fromNodeId BIGINT UNSIGNED,
                       toNodeId BIGINT UNSIGNED,
-                      latitude DOUBLE(25,20),
-                      longitude DOUBLE(25,20)
+                      latitude DOUBLE(10,5),
+                      longitude DOUBLE(10,5)
                       )")))
 {
   echo $mysqli->error;
@@ -37,6 +37,7 @@ if (!($mysqli->query("CREATE TABLE IF NOT EXISTS oneway LIKE oneway_new"))) {
   exit(1);
 }
 
+// prepare insert statement
 if (!($stmt = $mysqli->prepare("INSERT INTO oneway_new(wayId, fromNodeId, toNodeId, latitude, longitude) VALUES (?, ?, ?, ?, ?)")))
 {
   echo $mysqli->error;
