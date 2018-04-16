@@ -14,25 +14,25 @@ if ($mysqli->connect_errno) {
 }
 
 // prepare for updating database
-if (!($mysqli->query("CREATE TABLE IF NOT EXISTS oneway(
-                  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-                  wayId BIGINT UNSIGNED,
-                  fromNodeId BIGINT UNSIGNED,
-                  toNodeId BIGINT UNSIGNED,
-                  latitude DOUBLE(25,20),
-                  longitude DOUBLE(25,20)
-                )")))
-{
-  echo $mysqli->error;
-  exit(1);
-}
-
 if (!($mysqli->query("DROP TABLE IF EXISTS oneway_new"))) {
   echo $mysqli->error;
   exit(1);
 }
 
-if (!($mysqli->query("CREATE TABLE oneway_new LIKE oneway"))) {
+if (!($mysqli->query("CREATE TABLE IF NOT EXISTS oneway_new(
+                      id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                      wayId BIGINT UNSIGNED,
+                      fromNodeId BIGINT UNSIGNED,
+                      toNodeId BIGINT UNSIGNED,
+                      latitude DOUBLE(25,20),
+                      longitude DOUBLE(25,20)
+                      )")))
+{
+  echo $mysqli->error;
+  exit(1);
+}
+
+if (!($mysqli->query("CREATE TABLE IF NOT EXISTS oneway LIKE oneway_new"))) {
   echo $mysqli->error;
   exit(1);
 }
@@ -48,6 +48,7 @@ if (!($stmt->bind_param("iiidd", $wayID, $fromNodeId, $toNodeId, $latitude, $lon
   exit(1);
 }
 
+// using transaction and commit is crucial for acceptable performance during db population
 if (!($mysqli->query("START TRANSACTION"))) {
   echo $mysqli->error;
   exit(1);
