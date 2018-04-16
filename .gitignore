@@ -1,2 +1,2 @@
 # production config file
-config.php
+web/config.php
