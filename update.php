@@ -44,7 +44,7 @@ if (!($stmt = $mysqli->prepare("INSERT INTO oneway_new(wayId, fromNodeId, toNode
   exit(1);
 }
 
-if (!($stmt->bind_param("iiidd", $wayID, $fromNodeId, $toNodeId, $latitude, $longitude))) {
+if (!($stmt->bind_param("iiidd", $wayId, $fromNodeId, $toNodeId, $latitude, $longitude))) {
   echo $stmt->error;
   exit(1);
 }
@@ -58,14 +58,26 @@ if (!($mysqli->query("START TRANSACTION"))) {
 // get new data from server
 $file = gzfile("https://missingroads.skobbler.net/dumps/OneWays/directionOfFlow_" . date("Ymd") . ".csv.gz");
 
+$headline = str_getcsv($file[0], ";");
+$pos_wayId = array_search("wayId", $headline);
+$pos_fromNodeId = array_search("fromNodeId", $headline);
+$pos_toNodeId = array_search("toNodeId", $headline);
+$pos_status = array_search("status", $headline);
+$pos_theGeom = array_search("theGeom", $headline);
+
+if ($pos_wayId === FALSE || $pos_fromNodeId === FALSE || $pos_toNodeId === FALSE || $pos_status === FALSE || $pos_theGeom === FALSE) {
+  echo "Error: Input data format changed in an unpredictable manner!";
+  exit(1);
+}
+
 // convert data into desired format and prepare db operations
 foreach ($file as $line) {
   $csv = str_getcsv($line, ";");
-  if (isset($csv[4]) && $csv[4] == "OPEN") {
-    $centroid = get_centroid(geoPHP::load($csv[6], 'wkt'));
-    $wayID = $csv[0];
-    $fromNodeId = $csv[1];
-    $toNodeId = $csv[2];
+  if (isset($csv[$pos_status]) && $csv[$pos_status] == "OPEN") {
+    $centroid = get_centroid(geoPHP::load($csv[$pos_theGeom], 'wkt'));
+    $wayId = $csv[$pos_wayId];
+    $fromNodeId = $csv[$pos_fromNodeId];
+    $toNodeId = $csv[$pos_toNodeId];
     $latitude = $centroid->getY();
     $longitude = $centroid->getX();
     if (!($stmt->execute())) {
@@ -87,7 +99,7 @@ if (!($mysqli->query("COMMIT"))) {
 }
 
 // make new data available and clean up old data
-if (!($mysqli->query("RENAME TABLE oneway TO oneway_old, oneway_new To oneway;"))) {
+if (!($mysqli->query("RENAME TABLE oneway TO oneway_old, oneway_new TO oneway;"))) {
   echo $mysqli->error;
   exit(1);
 }
