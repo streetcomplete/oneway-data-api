@@ -25,7 +25,8 @@ if (!($mysqli->query("CREATE TABLE IF NOT EXISTS oneway_new(
                       fromNodeId BIGINT UNSIGNED,
                       toNodeId BIGINT UNSIGNED,
                       latitude DOUBLE(10,5),
-                      longitude DOUBLE(10,5)
+                      longitude DOUBLE(10,5),
+                      INDEX pos (latitude, longitude)
                       )")))
 {
   echo $mysqli->error;
