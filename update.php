@@ -3,6 +3,7 @@
 require_once "config.php";
 require_once "geometry_utils.php";
 
+
 // connect to database
 $mysqli = new mysqli($DB_HOST, $DB_USER, $DB_PASSWORD, $DB_DATABASE);
 if ($mysqli->connect_errno) {
