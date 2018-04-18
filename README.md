@@ -11,7 +11,7 @@ It consists mainly of two files:
 #### `index.php`
 - Used to get the data for a specified bounding box
 - The bounding box must be passed as an URL parameter
-- Example: [`/index.php/?bbox=18,-34,19,-33`](https://www.westnordost.de/oneway-data-api/?bbox=18,-34,19,-33) gets all ways in Cape Town
+- Example: [`/index.php/?bbox=18,-34,19,-33`](https://www.westnordost.de/streetcomplete/oneway-data-api/?bbox=18,-34,19,-33) gets all ways in Cape Town
 
 ## Configuration & Deployment
 
@@ -21,5 +21,5 @@ It consists mainly of two files:
 
 ## Getting started
 
-* [Website for testing](https://www.westnordost.de/oneway-data-api/)
+* [Website for testing](https://www.westnordost.de/streetcomplete/oneway-data-api/?bbox=18,-34,19,-33)
 * [Issue #1022 of StreetComplete](https://github.com/westnordost/StreetComplete/issues/1022) (The reason why this repository was created)
