@@ -1,11 +1,7 @@
 <?php
 
-ini_set('max_execution_time', 300);
-
 require_once "config.php";
-require_once "geometry/geometry_utils.php";
-require_once "geometry/Point.class.php";
-require_once "geometry/LineString.class.php";
+require_once "geometry_utils.php";
 
 // connect to database
 $mysqli = new mysqli($DB_HOST, $DB_USER, $DB_PASSWORD, $DB_DATABASE);
@@ -76,13 +72,14 @@ if ($pos_wayId === FALSE || $pos_fromNodeId === FALSE || $pos_toNodeId === FALSE
 foreach ($file as $line) {
   $csv = str_getcsv($line, ";");
   if (isset($csv[$pos_status]) && $csv[$pos_status] == "OPEN") {
-    $normalizedGeometry = str_replace(', ', ',', trim($csv[$pos_theGeom]));
-    $center = get_center(parse_line_string(get_data_string($normalizedGeometry)));
+    $geom = parse_lineString_points($csv[$pos_theGeom]);
+    if($geom === FALSE) continue;
+    $center = get_center($geom);
     $wayId = $csv[$pos_wayId];
     $fromNodeId = $csv[$pos_fromNodeId];
     $toNodeId = $csv[$pos_toNodeId];
-    $latitude = $center->y();
-    $longitude = $center->x();
+    $latitude = $center[1];
+    $longitude = $center[0];
     if (!($stmt->execute())) {
       echo $stmt->error;
       exit(1);
