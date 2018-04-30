@@ -63,8 +63,9 @@ $pos_fromNodeId = array_search("fromNodeId", $headline);
 $pos_toNodeId = array_search("toNodeId", $headline);
 $pos_status = array_search("status", $headline);
 $pos_theGeom = array_search("theGeom", $headline);
+$pos_numberOfTrips = array_search("numberOfTrips", $headline);
 
-if ($pos_wayId === FALSE || $pos_fromNodeId === FALSE || $pos_toNodeId === FALSE || $pos_status === FALSE || $pos_theGeom === FALSE) {
+if ($pos_wayId === FALSE || $pos_fromNodeId === FALSE || $pos_toNodeId === FALSE || $pos_status === FALSE || $pos_theGeom === FALSE || $pos_numberOfTrips === FALSE) {
   echo "Error: Input data format changed in an unpredictable manner!";
   exit(1);
 }
@@ -72,7 +73,7 @@ if ($pos_wayId === FALSE || $pos_fromNodeId === FALSE || $pos_toNodeId === FALSE
 // convert data into desired format and prepare db operations
 foreach ($file as $line) {
   $csv = str_getcsv($line, ";");
-  if (isset($csv[$pos_status]) && $csv[$pos_status] == "OPEN") {
+  if (isset($csv[$pos_status]) && $csv[$pos_status] == "OPEN" && isset($csv[$pos_numberOfTrips]) && $csv[$pos_numberOfTrips] > 10) {
     $geom = parse_lineString_points($csv[$pos_theGeom]);
     if($geom === FALSE) continue;
     $center = get_center($geom);
