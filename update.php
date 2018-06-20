@@ -55,7 +55,8 @@ if (!($mysqli->query("START TRANSACTION"))) {
 }
 
 // get new data from server
-$file = gzfile("https://missingroads.skobbler.net/dumps/OneWays/directionOfFlow_" . date("Ymd") . ".csv.gz");
+$ymd = date("Ymd");
+$file = gzfile("https://missingroads.skobbler.net/dumps/OneWays/" . $ymd . "/directionOfFlow_" . $ymd . ".csv.gz");
 
 $headline = str_getcsv($file[0], ";");
 $pos_wayId = array_search("wayId", $headline);
