@@ -22,8 +22,12 @@ if (!($mysqli->query("CREATE TABLE IF NOT EXISTS oneway_new(
                       wayId BIGINT UNSIGNED,
                       fromNodeId BIGINT UNSIGNED,
                       toNodeId BIGINT UNSIGNED,
-                      latitude DOUBLE(10,5),
-                      longitude DOUBLE(10,5),
+                      fromLongitude DOUBLE(10,7),
+                      fromLatitude DOUBLE(10,7),
+                      toLongitude DOUBLE(10,7),
+                      toLatitude DOUBLE(10,7),
+                      latitude DOUBLE(10,7),
+                      longitude DOUBLE(10,7),
                       INDEX pos (latitude, longitude)
                       )")))
 {
@@ -37,13 +41,13 @@ if (!($mysqli->query("CREATE TABLE IF NOT EXISTS oneway LIKE oneway_new"))) {
 }
 
 // prepare insert statement
-if (!($stmt = $mysqli->prepare("INSERT INTO oneway_new(wayId, fromNodeId, toNodeId, latitude, longitude) VALUES (?, ?, ?, ?, ?)")))
+if (!($stmt = $mysqli->prepare("INSERT INTO oneway_new(wayId, fromNodeId, toNodeId, fromLongitude, fromLatitude, toLongitude, toLatitude, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")))
 {
   echo $mysqli->error;
   exit(1);
 }
 
-if (!($stmt->bind_param("iiidd", $wayId, $fromNodeId, $toNodeId, $latitude, $longitude))) {
+if (!($stmt->bind_param("iiidddddd", $wayId, $fromNodeId, $toNodeId, $fromLongitude, $fromLatitude, $toLongitude, $toLatitude, $latitude, $longitude))) {
   echo $stmt->error;
   exit(1);
 }
@@ -81,6 +85,10 @@ foreach ($file as $line) {
     $wayId = $csv[$pos_wayId];
     $fromNodeId = $csv[$pos_fromNodeId];
     $toNodeId = $csv[$pos_toNodeId];
+    $fromLongitude = $geom[0][0];
+    $fromLatitude = $geom[0][1];
+    $toLongitude = $geom[count($geom)-1][0];
+    $toLatitude = $geom[count($geom)-1][1];
     $latitude = $center[1];
     $longitude = $center[0];
     if (!($stmt->execute())) {
