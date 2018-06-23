@@ -25,7 +25,7 @@ if (!is_valid_bbox($bbox)) {
 // get ways out of the db which lie in the bbox and construct result
 $result = (object) new stdClass();
 
-if (!($stmt = $mysqli->prepare("SELECT wayId, fromNodeId, toNodeId FROM oneway WHERE (latitude BETWEEN ? AND ?) AND (longitude BETWEEN ? and ?)"))) {
+if (!($stmt = $mysqli->prepare("SELECT wayId, fromNodeId, toNodeId, fromLongitude, fromLatitude, toLongitude, toLatitude FROM oneway WHERE (latitude BETWEEN ? AND ?) AND (longitude BETWEEN ? and ?)"))) {
   echo $mysqli->error;
   exit(1);
 }
@@ -41,12 +41,18 @@ if (!($stmt->execute())) {
 }
 
 $result->segments = array();
-$stmt->bind_result($wayId, $fromNodeId, $toNodeId);
+$stmt->bind_result($wayId, $fromNodeId, $toNodeId, $fromLongitude, $fromLatitude, $toLongitude, $toLatitude);
 while ($stmt->fetch()) {
   $segment = (object) new stdClass();
   $segment->wayId = $wayId;
   $segment->fromNodeId = $fromNodeId;
   $segment->toNodeId = $toNodeId;
+  $segment->fromPosition = (object) new stdClass();
+  $segment->fromPosition->lon = $fromLongitude;
+  $segment->fromPosition->lat = $fromLatitude;
+  $segment->toPosition = (object) new stdClass();
+  $segment->toPosition->lon = $toLongitude;
+  $segment->toPosition->lat = $toLatitude;
   $result->segments[] = $segment;
 }
 $stmt->close();
