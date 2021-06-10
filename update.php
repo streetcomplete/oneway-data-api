@@ -60,7 +60,7 @@ if (!($mysqli->query("START TRANSACTION"))) {
 
 // get new data from server
 $ymd = date("Ymd");
-$file = gzfile("https://grab.community.improve-osm.org/dumps/OneWays/" . $ymd . "/directionOfFlow_" . $ymd . ".csv.gz");
+$file = gzfile("https://dumps.improveosm.org/OneWays/" . $ymd . "/directionOfFlow_" . $ymd . ".csv.gz");
 
 $headline = str_getcsv($file[0], ";");
 $pos_wayId = array_search("wayId", $headline);
