@@ -1,6 +1,6 @@
 # Oneway Data API
 
-This is an API to get the latest [oneway data](https://dumps.improveosm.org/OneWays/) from [improveosm.org](https://improveosm.org)
+This is an API to get the latest [oneway data](https://dumps.improveosm.org/?prefix=ExistingDumps/OneWays/) from [improveosm.org](https://improveosm.org)
 
 It consists mainly of two files:
 
