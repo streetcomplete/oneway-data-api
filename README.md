@@ -1,3 +1,5 @@
+The ImproveOSM project [has been cancelled](https://github.com/openstreetmap/iD/issues/10302) by Grab, hence, this repository is obsolete.
+
 # Oneway Data API
 
 This is an API to get the latest [oneway data](https://dumps.improveosm.org/?prefix=ExistingDumps/OneWays/) from [improveosm.org](https://improveosm.org)
